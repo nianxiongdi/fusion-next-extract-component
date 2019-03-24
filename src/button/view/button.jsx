@@ -105,6 +105,7 @@ export default class Button extends Component {
     };
 
     render() {
+        //获取<Button >传的参数 
         const {
             prefix,
             className,
@@ -124,6 +125,7 @@ export default class Button extends Component {
         const ghostType =
             ['light', 'dark'].indexOf(ghost) >= 0 ? ghost : 'dark';
 
+        //获取所以的属性name
         const btnCls = classNames({
             [`${prefix}btn`]: true,
             [`${prefix}${size}`]: size,
@@ -137,7 +139,10 @@ export default class Button extends Component {
         });
 
         const count = Children.count(children);
-        const clonedChildren = Children.map(children, (child, index) => {
+        console.log(count)
+        console.log('----------')
+        const clonedChildren = Children.map(children, (child, index) => { //参考博客  
+ 
             if (
                 child &&
                 typeof child.type === 'function' &&
@@ -150,7 +155,9 @@ export default class Button extends Component {
                     [`${prefix}icon-alone`]: count === 1,
                     [child.props.className]: !!child.props.className,
                 });
-                return React.cloneElement(child, {
+
+                //    <Button type="primary"  ><Icon type="arrow-left" /> 123</Button> 当创建元素为这样的时候  参数为
+                return React.cloneElement(child, {  //创建元素
                     className: iconCls,
                     size: iconSize || mapIconSize(size),
                 });
