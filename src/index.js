@@ -2,11 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
  
-import Button from './button/view/button';
-import './index.js'
+// import Button from './button/view/button';
+
+import Input from './input/input'
+
+ 
 
 ReactDOM.render(
-    
-    <Button type="primary"  >123</Button>, document.getElementById('root'));
+    <div>
+    <Input size="large" placeholder="Large"   aria-label="Large" value="this is input" /><br /><br />
+
  
-serviceWorker.unregister();
+
+    </div>,
+    // <Button type="primary"  >123</Button>, 
+    document.getElementById('root'));
+ 
+ 
