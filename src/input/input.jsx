@@ -119,19 +119,38 @@ export default class Input extends Base {
 
     render() {
         console.log(this.props)
-        const {size, prefix } = this.props;
+        const {size, prefix, inputRender } = this.props;
         // console.log(size)
 
         //获取class的名字
-        const cls = classNames({
-            [`${prefix}${size}`]: true
-        })
+        const cls = classNames(this.getClass(), {
+            [`${prefix}${size}`]: true,
+         
+        });
+
+
+        const inputEl = (
+            <input 
+
+            />
+        );
+
+
+        const inputWrap = (
+            <span 
+                className={cls}>
+                {inputRender(inputEl)} 
+            </span>
+        );
+
+
+
+
 
 
 
         return (<Group>
-            <div>13</div>
-            <div>13</div>
+            { inputWrap }
         </Group>);
 
     }

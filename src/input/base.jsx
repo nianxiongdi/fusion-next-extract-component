@@ -107,6 +107,16 @@ class Base extends React.Component {
         locale: zhCN.Input,
     }
 
+    getClass() {
+        const { disabled, state, prefix } = this.props;
+
+        return classNames({
+            [`${prefix}input`]: true,
+            [`${prefix}disabled`]: !!disabled,
+            [`${prefix}error`]: state === 'error',
+            [`${prefix}focus`]: this.state.focus,
+        });
+    }
 
 
 
