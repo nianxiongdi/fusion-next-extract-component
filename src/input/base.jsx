@@ -107,6 +107,7 @@ class Base extends React.Component {
         locale: zhCN.Input,
     }
 
+    // 样式
     getClass() {
         const { disabled, state, prefix } = this.props;
 
@@ -118,7 +119,41 @@ class Base extends React.Component {
         });
     }
 
+    // 这样做的目的不是很明白 很疑惑 
+    ieHack(value) {
+        return value;
+    }
+     
 
+    onChange(event) {
+        let value = event.target.value;
+        
+        // value = this.ieHack(value);
+
+        // 这个代码看半天才明白啥意思   当你传value的时候，用户自定义控制修改， 当用户没有 传这个字段时，自己修改
+        if (!('value' in this.props)) {
+            this.setState({
+                value
+            });
+        }
+        
+        // 回调用户自定义的方法
+        this.props.onChange(value, event);        
+    }
+
+
+    //  这个主要封装一些属性和方法 返回给Input组件
+    // 以对象的形式返回
+    getProps() {
+
+        const props = {
+            value: this.state.value,
+            onChange: this.onChange.bind(this) // 绑定this
+        }
+ 
+
+        return props;
+    }
 
    
 }

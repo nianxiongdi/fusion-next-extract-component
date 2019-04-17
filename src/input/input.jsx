@@ -106,7 +106,7 @@ export default class Input extends Base {
         if('value' in props) {
             value = props.value;
         }else {
-            value = props.defaultProps;
+            value = props.defaultValue;
         }
 
         this.state = {
@@ -115,23 +115,33 @@ export default class Input extends Base {
 
     }
 
- 
+    componentWillReceiveProps(nextProps) {
+        console.log(123);
+    }
 
     render() {
-        console.log(this.props)
-        const {size, prefix, inputRender } = this.props;
+        // console.log(this.props)
+        const {size, prefix, inputRender, value } = this.props;
         // console.log(size)
+        // console.log(value)
+        // console.log(this.props)
 
         //获取class的名字
         const cls = classNames(this.getClass(), {
             [`${prefix}${size}`]: true,
-         
+            
         });
 
 
+        //调用Base组件的 getProps方法
+        const props = this.getProps();
+        // console.log(props)
+        // console.log('--')
+        
         const inputEl = (
             <input 
-
+                value={value} //这里实现 显示value
+                {...props}
             />
         );
 
@@ -142,13 +152,8 @@ export default class Input extends Base {
                 {inputRender(inputEl)} 
             </span>
         );
-
-
-
-
-
-
-
+ 
+ 
         return (<Group>
             { inputWrap }
         </Group>);

@@ -6,11 +6,20 @@ import * as serviceWorker from './serviceWorker';
 
 import Input from './input/input'
 
+
+function handleChange(v, e) {
+    console.log(v)
+}
+
  
 
 ReactDOM.render(
     <div>
-    <Input size="large" placeholder="Large"   aria-label="Large" value="this is input" /><br /><br />
+    <Input size="medium" placeholder="Large"   
+        aria-label="Large" 
+        defaultValue="init value"
+        onChange={handleChange}
+    /><br /><br />
 
  
 
