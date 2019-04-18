@@ -115,6 +115,9 @@ export default class Input extends Base {
 
     }
 
+    /**
+     * 获取字符串的长度， 也可以自定义
+     **/
     getValueLength(value) {
         const nv = `${value}`;
         
@@ -129,6 +132,7 @@ export default class Input extends Base {
         return strLen;
     }
 
+ 
     componentWillReceiveProps(nextProps) {
         console.log(123);
     }

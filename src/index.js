@@ -12,8 +12,9 @@ function handleChange(v, e) {
     console.log(v)
 }
 
-function hadnleKeyDown(e) {
+function hadnleKeyDown(e, opts) {
     console.log(e)
+    console.log(opts)
     console.log('----')
 }
 
@@ -22,6 +23,7 @@ ReactDOM.render(
     <Input size="medium" placeholder="Large"   
         aria-label="Large" 
         defaultValue="init value"
+        trim 
         // onChange={handleChange}
         onKeyDown={hadnleKeyDown}
     /><br /><br />

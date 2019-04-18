@@ -142,19 +142,30 @@ class Base extends React.Component {
     }
 
 
-
+    /**
+     * 当用户按下之后的操作
+     **/
     onKeyDown(e) {
 
         const value = e.target.value;
-        const opts = {};
+        const { maxLength } = this.props;
+        const len = maxLength > 0 && value ? this.getValueLength(value) : 0;  // 获取当前的最大长度
+        const opts = { };
 
-        const len = this.getValueLength(value);
+        // 去除空格 this.props.trim用户传的 默认为false
+        if (this.props.trim && e.keyCode === 32) {
+            opts.beTrimed = true;
+        }
 
-        console.log(len)
-        console.log('-------')
-
+        // has defined maxLength and has over max length and has not input backspace and delete
+        // 当超出了也为true
+        if (maxLength > 0 && (len > maxLength + 1 ||
+            ((len === maxLength || len === maxLength + 1) && e.keyCode !== 8 && e.keyCode !== 46)
+        )) {
+            opts.overMaxLength = true;
+        }
+ 
         this.props.onKeyDown(e, opts)
-
     }
 
 

@@ -129,7 +129,56 @@ function handleChange(v, e) {
 
 
 
+```js
 
+    Input.js 代码
+
+     /**
+     * 获取字符串的长度， 也可以自定义
+     **/
+    getValueLength(value) {
+        const nv = `${value}`;
+        
+        //这里判断是否是用户 自定义的方法获取长度，若没有定义  返回的是undefined
+        let strLen = this.props.getValueLength(nv);
+    
+        // 若用户没有自定义 则获取的是字符串长度  思想666
+        if (typeof strLen !== 'number') {
+            strLen = nv.length;
+        }
+
+        return strLen;
+    }
+
+
+
+    Base.js 代码
+    /**
+     * 当用户按下之后的操作
+     **/
+    onKeyDown(e) {
+
+        const value = e.target.value;
+        const { maxLength } = this.props;
+        const len = maxLength > 0 && value ? this.getValueLength(value) : 0;  // 获取当前的最大长度
+        const opts = { };
+
+        // 去除空格 this.props.trim用户传的 默认为false
+        if (this.props.trim && e.keyCode === 32) {
+            opts.beTrimed = true;
+        }
+
+        // has defined maxLength and has over max length and has not input backspace and delete
+        // 当超出了也为true
+        if (maxLength > 0 && (len > maxLength + 1 ||
+            ((len === maxLength || len === maxLength + 1) && e.keyCode !== 8 && e.keyCode !== 46)
+        )) {
+            opts.overMaxLength = true;
+        }
+ 
+        this.props.onKeyDown(e, opts)
+    }
+```
 
 
 
