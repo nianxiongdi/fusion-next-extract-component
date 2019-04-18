@@ -115,6 +115,20 @@ export default class Input extends Base {
 
     }
 
+    getValueLength(value) {
+        const nv = `${value}`;
+        
+        //这里判断是否是用户 自定义的方法获取长度，若没有定义  返回的是undefined
+        let strLen = this.props.getValueLength(nv);
+    
+        // 若用户没有自定义 则获取的是字符串长度  思想666
+        if (typeof strLen !== 'number') {
+            strLen = nv.length;
+        }
+
+        return strLen;
+    }
+
     componentWillReceiveProps(nextProps) {
         console.log(123);
     }

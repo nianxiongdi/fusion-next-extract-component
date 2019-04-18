@@ -142,13 +142,30 @@ class Base extends React.Component {
     }
 
 
+
+    onKeyDown(e) {
+
+        const value = e.target.value;
+        const opts = {};
+
+        const len = this.getValueLength(value);
+
+        console.log(len)
+        console.log('-------')
+
+        this.props.onKeyDown(e, opts)
+
+    }
+
+
     //  这个主要封装一些属性和方法 返回给Input组件
     // 以对象的形式返回
     getProps() {
 
         const props = {
             value: this.state.value,
-            onChange: this.onChange.bind(this) // 绑定this
+            onChange: this.onChange.bind(this) , // 绑定this
+            onKeyDown: this.onKeyDown.bind(this) //onKeyDown 进行this绑定
         }
  
 
