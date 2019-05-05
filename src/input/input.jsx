@@ -101,7 +101,7 @@ export default class Input extends Base {
 
     constructor(props) {
         super(props);
-        console.log(props.defaultProps)
+        // console.log(props.defaultProps)
         let value;
         if('value' in props) {
             value = props.value;
@@ -137,13 +137,48 @@ export default class Input extends Base {
         console.log(123);
     }
 
+    //onKeyDown事件的调用函数
+    handleKeyDown = e => {
+
+        // Enter键
+        if(e.keyCode === 13) {
+            //\
+            return ;
+        }
+
+        //调用的是父类的方法
+        this.onKeyDown(e);
+    }
+
+    renderControl() {
+        const { prefix } = this.props;
+
+        const lenWrap = this.renderLength();
+
+        return <span className={`${prefix}input-control`}>
+            {lenWrap} 
+        </span> ;
+ 
+    }
+    
+
     render() {
         // console.log(this.props)
-        const {size, prefix, inputRender, value } = this.props;
-        // console.log(size)
+        
+        this.renderLength();
+
+        const {
+            size, // 输入框的带下 
+            prefix, // class的前缀
+            inputRender, //渲染
+            value
+            
+
+        } = this.props;
+         // console.log(size)
         // console.log(value)
         // console.log(this.props)
-
+        // console.log(disabled)
         //获取class的名字
         const cls = classNames(this.getClass(), {
             [`${prefix}${size}`]: true,
@@ -159,15 +194,18 @@ export default class Input extends Base {
         const inputEl = (
             <input 
                 value={value} //这里实现 显示value
+                onKeyDown={this.handleKeyDown}
                 {...props}
             />
         );
-
+        
+     
 
         const inputWrap = (
             <span 
                 className={cls}>
                 {inputRender(inputEl)} 
+                {this.renderControl()}
             </span>
         );
  

@@ -24,8 +24,12 @@ ReactDOM.render(
         aria-label="Large" 
         defaultValue="init value"
         trim 
+        // disabled
         // onChange={handleChange}
-        onKeyDown={hadnleKeyDown}
+        // onKeyDown={hadnleKeyDown}
+        maxLength={3}
+        hasLimitHint
+         
     /><br /><br />
 
     </div>,

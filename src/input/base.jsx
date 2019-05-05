@@ -103,6 +103,7 @@ class Base extends React.Component {
         onFocus: func.noop,
         onBlur: func.noop,
         onChange: func.noop,
+        onKeyDown: func.noop,
         getValueLength: func.noop, //自定义字符串计算长度方式
         locale: zhCN.Input,
     }
@@ -146,7 +147,7 @@ class Base extends React.Component {
      * 当用户按下之后的操作
      **/
     onKeyDown(e) {
-
+        console.log(e)
         const value = e.target.value;
         const { maxLength } = this.props;
         const len = maxLength > 0 && value ? this.getValueLength(value) : 0;  // 获取当前的最大长度
@@ -168,15 +169,41 @@ class Base extends React.Component {
         this.props.onKeyDown(e, opts)
     }
 
+    //获取最大的长度
+    renderLength() {
+        const { maxLength, prefix, hasLimitHint } = this.props;
+        const len = maxLength > 0 && this.state.value ? this.getValueLength(this.state.value) : 0;
+
+        const classesLenWrap = classNames({
+            [`${prefix}input-len`]: true,
+            [`${prefix}error`]: len > maxLength
+        });
+
+        const content =  `${len}/${maxLength}`;
+
+        return maxLength && hasLimitHint ? <span className={classesLenWrap}>{content}</span> : null;
+    }
+
 
     //  这个主要封装一些属性和方法 返回给Input组件
     // 以对象的形式返回
     getProps() {
 
+        // 这个调用 this.props
+        const { 
+            disabled,
+            maxLength,
+            cutString, // 当设置了maxLength时，是否截断超出字符串 
+            
+        } = this.props;
+        
+
         const props = {
             value: this.state.value,
             onChange: this.onChange.bind(this) , // 绑定this
-            onKeyDown: this.onKeyDown.bind(this) //onKeyDown 进行this绑定
+            // onKeyDown: this.onKeyDown.bind(this) //onKeyDown 进行this绑定 // 第二种方式
+            disabled,
+            maxLength: cutString ? maxLength : undefined, // 进行修改
         }
  
 

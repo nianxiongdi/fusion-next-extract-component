@@ -179,10 +179,139 @@ function handleChange(v, e) {
         this.props.onKeyDown(e, opts)
     }
 ```
+ 
+
+### disabled 按钮是否处于禁用状态
+
+在base.jsx:
+```js
+// 设置 样式
+getClass() {
+    const { disabled, state, prefix } = this.props;
+
+    return classNames({
+        [`${prefix}input`]: true,
+        [`${prefix}disabled`]: !!disabled,
+        [`${prefix}error`]: state === 'error',
+        [`${prefix}focus`]: this.state.focus,
+    });
+}
+
+// 传递给子类
+getProps() {
+    // 这个调用 this.props
+    const { disabled } = this.props;
+}
+```
+
+在input.jsx中：
+```js
+const cls = classNames(this.getClass(), {
+    [`${prefix}${size}`]: true,
+    
+});
+
+//调用Base组件的 getProps方法
+const props = this.getProps();
+
+//渲染
+const inputEl = (
+    <input 
+        value={value} //这里实现 显示value
+        onKeyDown={this.handleKeyDown}
+        {...props}
+    />
+);
+```
+ 
+
+### maxLength 输入的最大长度
+
+这里input原生的有 `<input type="text" maxLength="5" name="usrname">` maxLength属性，因此操作如下：
+
+```js
+//在Base.jsx中操作：
+   getProps() {
+
+        // 这个调用 this.props
+        const { 
+            。。。
+            maxLength
+        } = this.props;
+   }
+
+//传递给input.jsx即可
+```
+
+### hasLimitHint 是否展现最大长度样式
+
+在base.jsx中：
+```js
+ //渲染最大的长度
+renderLength() {
+    const { maxLength, prefix, hasLimitHint } = this.props;
+    const len = maxLength > 0 && this.state.value ? this.getValueLength(this.state.value) : 0;
+
+    const classesLenWrap = classNames({
+        [`${prefix}input-len`]: true,   //长度的样式
+        [`${prefix}error`]: len > maxLength // 当超出时，变红
+    });
+
+    const content =  `${len}/${maxLength}`;
+
+    return maxLength && hasLimitHint ? <span className={classesLenWrap}>{content}</span> : null;
+}
+```
+
+在input.jsx中:
+```js
+//进渲染的函数
+renderControl() {
+    const { prefix } = this.props;
+
+    const lenWrap = this.renderLength();
+
+    return <span className={`${prefix}input-control`}>
+        {lenWrap} 
+    </span> ;
+}
+
+...
 
 
+const inputWrap = (<span >
+    ...
+    {this.renderControl()}
+</span>);
 
+```
 
+### cutString 当设置了maxLength时，是否截断超出字符串	
+
+在Base.jsx中设置
+```js
+getProps(){
+    ...
+
+     // 这个调用 this.props
+    const { 
+        ...
+        maxLength,
+        cutString, // 当设置了maxLength时，是否截断超出字符串 
+        
+    } = this.props;
+    
+
+    const props = {
+        ...
+        maxLength: cutString ? maxLength : undefined, // 进行修改
+    }
+
+    ...
+}
+```
+
+### readOnly只读
 
 
 
@@ -210,7 +339,6 @@ class="next-input"  显示主要的样式
     border: 1px solid #C4C6CF;
     background-color: #FFFFFF
 }
-
 ```
 
 
