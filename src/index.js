@@ -18,6 +18,10 @@ function hadnleKeyDown(e, opts) {
     console.log('----')
 }
 
+function handleFocus(e) {
+    console.log('-onFocus-')
+}
+
 ReactDOM.render(
     <div>
     <Input size="medium" placeholder="Large"   
@@ -26,9 +30,16 @@ ReactDOM.render(
         trim 
         // disabled
         // onChange={handleChange}
-        // onKeyDown={hadnleKeyDown}
-        maxLength={3}
+        onKeyDown={hadnleKeyDown}
+        // onFocus={handleFocus}
+        // readOnly
+        // trim
+        // placeholder="123"
+        maxLength={10}
+        // htmlType='password'
         hasLimitHint
+        // name="abc"
+        state="loading"
          
     /><br /><br />
 

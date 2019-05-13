@@ -129,6 +129,10 @@ class Base extends React.Component {
     onChange(event) {
         let value = event.target.value;
         
+        if(this.props.trim) {
+            value = value.trim();
+        }
+
         // value = this.ieHack(value);
 
         // 这个代码看半天才明白啥意思   当你传value的时候，用户自定义控制修改， 当用户没有 传这个字段时，自己修改
@@ -147,9 +151,11 @@ class Base extends React.Component {
      * 当用户按下之后的操作
      **/
     onKeyDown(e) {
-        console.log(e)
+        // console.log(e)
+        console.log('-onKeyDown-')
         const value = e.target.value;
         const { maxLength } = this.props;
+        
         const len = maxLength > 0 && value ? this.getValueLength(value) : 0;  // 获取当前的最大长度
         const opts = { };
 
@@ -184,6 +190,22 @@ class Base extends React.Component {
         return maxLength && hasLimitHint ? <span className={classesLenWrap}>{content}</span> : null;
     }
 
+    // 聚焦的状态值
+    onFocus(e) {
+        this.setState({
+            focus: true
+        });
+        this.props.onFocus(e);
+    }
+
+    // 失去焦点
+    onBlur(e) {
+        this.setState({
+            focus: false
+        });
+        this.props.onBlur(e);
+    }
+
 
     //  这个主要封装一些属性和方法 返回给Input组件
     // 以对象的形式返回
@@ -194,16 +216,23 @@ class Base extends React.Component {
             disabled,
             maxLength,
             cutString, // 当设置了maxLength时，是否截断超出字符串 
-            
+            readOnly, // 是否为只读
+            placeholder, //placeholder
         } = this.props;
         
+        // console.log(this.props)
 
         const props = {
             value: this.state.value,
+            disabled,
+            readOnly,
+            placeholder,
+            maxLength: cutString ? maxLength : undefined, // 进行修改
             onChange: this.onChange.bind(this) , // 绑定this
             // onKeyDown: this.onKeyDown.bind(this) //onKeyDown 进行this绑定 // 第二种方式
-            disabled,
-            maxLength: cutString ? maxLength : undefined, // 进行修改
+            onFocus: this.onFocus.bind(this), // 获取焦点
+            onBlur: this.onBlur.bind(this), // 失去焦点
+
         }
  
 

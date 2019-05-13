@@ -6,7 +6,7 @@
 分析input组件,如下:
 
 分析源码:  
-  Base.jsx  //封一下方法和属性
+  Base.jsx  //封装一下方法和属性
   Input.jsx //渲染input
   Group.jsx //对input进一步的封装
 
@@ -227,7 +227,9 @@ const inputEl = (
 
 ### maxLength 输入的最大长度
 
-这里input原生的有 `<input type="text" maxLength="5" name="usrname">` maxLength属性，因此操作如下：
+* maxlength也是原声的input属性
+
+* 这里input原生的有 `<input type="text" maxLength="5" name="usrname">` maxLength属性，因此操作如下：
 
 ```js
 //在Base.jsx中操作：
@@ -288,6 +290,7 @@ const inputWrap = (<span >
 
 ### cutString 当设置了maxLength时，是否截断超出字符串	
 
+
 在Base.jsx中设置
 ```js
 getProps(){
@@ -312,6 +315,174 @@ getProps(){
 ```
 
 ### readOnly只读
+
+```js
+//在Base.jsx中设置
+ getProps() {
+    const { 
+        ...
+        readOnly, // 是否为只读
+    } = this.props;
+
+    const props = {
+        ...
+        readOnly,
+    }
+
+
+    return props;
+}
+```
+
+
+### trim 
+
+* onChange返回会自动去除头尾空字符	
+
+```js
+// input.jsx
+onChange(event) {
+    let value = event.target.value;
+    
+    if(this.props.trim) {
+        value = value.trim();
+    }
+    ...
+}
+```
+
+
+### placeholder
+
+* 输入提示	
+
+
+```js
+//在Base.jsx中设置
+ getProps() {
+    const { 
+        ...
+        placeholder, // placeholder
+    } = this.props;
+
+    const props = {
+        ...
+        placeholder,
+    }
+
+
+    return props;
+}
+```
+
+### onFocus
+
+* 获取焦点时候触发的回调 ,Function() => void	
+
+```js
+
+//base.jsx
+// 聚焦的状态值
+onFocus(e) {
+    this.setState({
+        focus: true
+    });
+    // 这里调用的是用户自定义的方法
+    this.props.onFocus(e);
+}
+
+// 绑定
+getProps() {
+    ...
+
+    const props = {
+        onFocus: this.onFocus.bind(this)
+    }
+}
+
+```
+
+
+### onBlur
+
+* 获取焦点时候触发的回调  Function() => void	
+* 同上
+
+### getValueLength
+
+* 自定义字符串计算长度方式 - 用户自己去定义长度,只需要返回结果就行
+
+```js
+
+ /**
+ * 获取字符串的长度， 也可以自定义
+ **/
+getValueLength(value) {
+    const nv = `${value}`;
+    
+    //这里判断是否是用户 自定义的方法获取长度，若没有定义  返回的是undefined
+    let strLen = this.props.getValueLength(nv);
+
+    // 若用户没有自定义 则获取的是字符串长度  思想666
+    if (typeof strLen !== 'number') {
+        strLen = nv.length;
+    }
+
+    return strLen;
+}
+
+
+```
+
+### htmlType
+
+* 原生type	
+
+```js
+const {
+        ...
+        htmlType, // 原生的type类型判断
+
+    } = this.props;
+    
+    const cls = classNames(this.getClass(), {
+        ...
+        [`${prefix}hidden`]: this.props.htmlType === 'hidden',
+
+    });
+
+
+    ...
+    
+    const inputEl = (
+        <input 
+            ...
+            type={htmlType}
+            ...
+        />
+    );
+```
+
+
+### name
+
+```js
+const dataProps = obj.pickAttrsWith(this.props, 'data-');
+// Custom props are transparently transmitted to the core input node by default
+// 自定义属性默认透传到核心node节点：input
+const others = obj.pickOthers(Object.assign({}, dataProps, Input.propTypes), this.props);
+
+const inputEl = (
+    <input 
+        {...others} 
+        ...
+    />
+```
+
+
+### state
+
+* 'error'(错误) | 'loading'(校验中) 'success'(成功)	
 
 
 

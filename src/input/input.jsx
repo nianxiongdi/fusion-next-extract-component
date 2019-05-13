@@ -119,6 +119,7 @@ export default class Input extends Base {
      * 获取字符串的长度， 也可以自定义
      **/
     getValueLength(value) {
+        console.log('--getValueLength')
         const nv = `${value}`;
         
         //这里判断是否是用户 自定义的方法获取长度，若没有定义  返回的是undefined
@@ -151,12 +152,23 @@ export default class Input extends Base {
     }
 
     renderControl() {
-        const { prefix } = this.props;
+        const { prefix, //前缀
+            state
+         } = this.props;
 
         const lenWrap = this.renderLength();
 
+         console.log('----------renderControl-------')
+         console.log(lenWrap)
+        let stateWrap = null;
+        if (state === 'success') {
+            stateWrap = <Icon type="success-filling"/>;
+        } else if (state === 'loading') {
+            stateWrap = <Icon type="loading"/>;
+        }
+
         return <span className={`${prefix}input-control`}>
-            {lenWrap} 
+            {stateWrap}{lenWrap} 
         </span> ;
  
     }
@@ -171,7 +183,8 @@ export default class Input extends Base {
             size, // 输入框的带下 
             prefix, // class的前缀
             inputRender, //渲染
-            value
+            value,
+            htmlType, // 原生的type类型判断
             
 
         } = this.props;
@@ -182,7 +195,8 @@ export default class Input extends Base {
         //获取class的名字
         const cls = classNames(this.getClass(), {
             [`${prefix}${size}`]: true,
-            
+            [`${prefix}hidden`]: this.props.htmlType === 'hidden',
+
         });
 
 
@@ -191,10 +205,19 @@ export default class Input extends Base {
         // console.log(props)
         // console.log('--')
         
+         // custom data attributes are assigned to the top parent node
+        // data-类自定义数据属性分配到顶层node节点
+        const dataProps = obj.pickAttrsWith(this.props, 'data-');
+        // Custom props are transparently transmitted to the core input node by default
+        // 自定义属性默认透传到核心node节点：input
+        const others = obj.pickOthers(Object.assign({}, dataProps, Input.propTypes), this.props);
+
         const inputEl = (
             <input 
+                {...others} 
                 value={value} //这里实现 显示value
                 onKeyDown={this.handleKeyDown}
+                type={htmlType}
                 {...props}
             />
         );
