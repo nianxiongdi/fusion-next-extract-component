@@ -39,7 +39,8 @@ ReactDOM.render(
         // htmlType='password'
         hasLimitHint
         // name="abc"
-        state="loading"
+        // state="error"
+        label='username'
          
     /><br /><br />
 

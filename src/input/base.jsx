@@ -115,7 +115,7 @@ class Base extends React.Component {
         return classNames({
             [`${prefix}input`]: true,
             [`${prefix}disabled`]: !!disabled,
-            [`${prefix}error`]: state === 'error',
+            [`${prefix}error`]: state === 'error', // 关于state有三种，这里时error,其他两种在intput的renderControl方法中设置。 state: PropTypes.oneOf(['error', 'loading', 'success']),
             [`${prefix}focus`]: this.state.focus,
         });
     }
@@ -237,6 +237,17 @@ class Base extends React.Component {
  
 
         return props;
+    }
+
+    // 聚焦点
+    focus() {
+        this.inputRef.focus();
+        if (typeof start !== 'undefined') {
+            this.inputRef.selectionStart = start;
+        }
+        if (typeof end !== 'undefined') {
+            this.inputRef.selectionEnd = end;
+        }
     }
 
    

@@ -10,6 +10,10 @@ import Group from './group';
 import './style'
 import { typeOf } from '../util/object';
  
+// preventDefault here can stop onBlur to keep focus state
+function preventDefault(e) {
+    e.preventDefault();
+}
 /** Input */
 export default class Input extends Base {
     static propTypes = {
@@ -151,15 +155,32 @@ export default class Input extends Base {
         this.onKeyDown(e);
     }
 
+
+    onClear(e) {
+        if (this.props.disabled) {
+            return;
+        }
+
+        // 非受控模式清空内部数据
+        if (!('value' in this.props)) {
+            this.setState({
+                value: '',
+            });
+        }
+        this.props.onChange('', e, 'clear');
+        this.focus();
+    }
+
+
     renderControl() {
-        const { prefix, //前缀
-            state
+        const { prefix, // 前缀
+            state,
+            hasClear, // 清楚按钮
          } = this.props;
 
         const lenWrap = this.renderLength();
 
-         console.log('----------renderControl-------')
-         console.log(lenWrap)
+        // 这是state属性的success ， loading
         let stateWrap = null;
         if (state === 'success') {
             stateWrap = <Icon type="success-filling"/>;
@@ -167,12 +188,43 @@ export default class Input extends Base {
             stateWrap = <Icon type="loading"/>;
         }
 
+        // 清楚按钮
+        let clearWrap = null;
+        clearWrap = (
+            <span className={`${prefix}input-hint-wrap`}>
+                { 
+                    <Icon
+                        type="delete-filling"
+                        role="button"
+                        tabIndex="0"
+                        className={`${prefix}input-clear`}
+                        onClick={this.onClear.bind(this)}
+                        onMouseDown={preventDefault}
+                        onKeyDown={this.handleKeyDownFromClear}
+                    />
+                }
+                
+            </span>
+        );
+        
         return <span className={`${prefix}input-control`}>
-            {stateWrap}{lenWrap} 
+            {clearWrap}
+            {stateWrap}
+            {lenWrap} 
         </span> ;
  
     }
     
+
+    //渲染label的方法   
+    renderLabel() {
+        const { label, prefix, id } = this.props;
+        return label ? ( 
+            <label className={`${prefix}input-label`} htmlFor={id}>
+                {label}
+            </label>
+        ): null;
+    }
 
     render() {
         // console.log(this.props)
@@ -227,6 +279,7 @@ export default class Input extends Base {
         const inputWrap = (
             <span 
                 className={cls}>
+                {this.renderLabel()}
                 {inputRender(inputEl)} 
                 {this.renderControl()}
             </span>

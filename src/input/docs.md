@@ -450,10 +450,7 @@ const {
         [`${prefix}hidden`]: this.props.htmlType === 'hidden',
 
     });
-
-
     ...
-    
     const inputEl = (
         <input 
             ...
@@ -483,6 +480,71 @@ const inputEl = (
 ### state
 
 * 'error'(错误) | 'loading'(校验中) 'success'(成功)	
+
+```js
+// 关于state有三种，这里时error,其他两种在intput的renderControl方法中设置。 state: PropTypes.oneOf(['error', 'loading', 'success']),
+
+// input.jsx
+//  loading', 'success的设置
+renderControl() {
+    const { prefix, //前缀
+        state
+        } = this.props;
+
+    const lenWrap = this.renderLength();
+
+    // 这是state属性的success ， loading
+    let stateWrap = null;
+    if (state === 'success') {
+        stateWrap = <Icon type="success-filling"/>;
+    } else if (state === 'loading') {
+        stateWrap = <Icon type="loading"/>;
+    }
+
+    return <span className={`${prefix}input-control`}>
+        {stateWrap}{lenWrap} 
+    </span> ;
+}
+
+//base.jsx
+getClass() {
+    const { disabled, state, prefix } = this.props;
+
+    return classNames({
+        ...
+        [`${prefix}error`]: state === 'error',  
+    });
+} 
+```
+
+### label
+
+```js
+//渲染label的方法   
+renderLabel() {
+    const { label, prefix, id } = this.props;
+    return label ? ( 
+        <label className={`${prefix}input-label`} htmlFor={id}>
+            {label}
+        </label>
+    ): null;
+}
+
+
+
+
+// 
+const inputWrap = (
+    <span 
+        className={cls}>
+        {this.renderLabel()}
+        {inputRender(inputEl)} 
+        {this.renderControl()}
+    </span>
+);
+
+
+```
 
 
 
