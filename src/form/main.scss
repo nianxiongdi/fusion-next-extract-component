@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+@import "../core/index-noreset.scss";
+@import "scss/mixin";
+@import "scss/variable";
+
+//$form-prefix 为next-form
+#{$form-prefix} {
+    // 设置box-sizing为border-box
+    @include box-sizing;
+    //  [`${prefix}form-item`] 对所以的Item进行包裹
+    &-item {
+        margin-bottom: $form-item-m-margin-b; // 16px;
+
+        // 这是是设置labelAlign为top的css样式
+        &.#{$css-prefix}top > #{$form-prefix}-item-label {
+            margin-bottom: $form-top-label-margin-b; // 2px
+        }
+    }
+    
+    // 包裹label的css样式的设置
+    &-item-label {
+        display: inline-block; // 可设宽高，不自动换行
+        vertical-align: top;
+        color: $form-label-color; // #666666
+        text-align: right;
+        padding-right: $form-label-padding-r; // 12px;
+    }
+
+    // input包裹的css的样式设置
+    &-item-control {
+        
+    }
+  
+}
+
+ 

@@ -124,6 +124,24 @@ class Base extends React.Component {
     ieHack(value) {
         return value;
     }
+
+
+    /**
+     * 这段代码之前一直不知道为啥这么写，原来是为了在受控情况下
+     *   return React.cloneElement(child, extraProps); 
+     *      当child代表为Input时，则componentWillReceiveProps接收改变后参数，就是props发生改变，就会调用componentWillReceiveProps
+     */
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+        if ('value' in nextProps) {
+            this.setState({
+                value:
+                    typeof nextProps.value === 'undefined'
+                        ? ''
+                        : nextProps.value,
+            });
+        }
+    }
      
 
     onChange(event) {
@@ -172,7 +190,7 @@ class Base extends React.Component {
             opts.overMaxLength = true;
         }
  
-        this.props.onKeyDown(e, opts)
+        this.props.onKeyDown(e, opts);
     }
 
     //获取最大的长度
@@ -241,15 +259,16 @@ class Base extends React.Component {
 
     // 聚焦点
     focus() {
-        this.inputRef.focus();
-        if (typeof start !== 'undefined') {
-            this.inputRef.selectionStart = start;
-        }
-        if (typeof end !== 'undefined') {
-            this.inputRef.selectionEnd = end;
-        }
+        // console.log(start, end);
+        // console.log('~~~~~~~~~~');
+        // this.inputRef.focus();
+        // if (typeof start !== 'undefined') {
+        //     this.inputRef.selectionStart = start;
+        // }
+        // if (typeof end !== 'undefined') {
+        //     this.inputRef.selectionEnd = end;
+        // }
     }
-
    
 }
 

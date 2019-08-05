@@ -1,51 +1,54 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import * as serviceWorker from './serviceWorker';
  
 // import Button from './button/view/button';
 
+import Form from './form/form'
+import Item from './form/item'
+
 import Input from './input/input'
+ 
+// import { Input } from '@alifd/next';
+// import '@alifd/next/dist/next.css';
+
 import { func } from './util';
-
-
-function handleChange(v, e) {
-    console.log(v)
-}
-
-function hadnleKeyDown(e, opts) {
-    console.log(e)
-    console.log(opts)
-    console.log('----')
-}
-
-function handleFocus(e) {
-    console.log('-onFocus-')
-}
-
+const formItemLayout = {
+    labelCol: {
+        fixedSpan:5
+    },
+    wrapperCol: {
+        span: 14
+    }
+};
+  
 ReactDOM.render(
     <div>
-    <Input size="medium" placeholder="Large"   
-        aria-label="Large" 
-        defaultValue="init value"
-        trim 
-        // disabled
-        // onChange={handleChange}
-        onKeyDown={hadnleKeyDown}
-        // onFocus={handleFocus}
-        // readOnly
-        // trim
-        // placeholder="123"
-        maxLength={10}
-        // htmlType='password'
-        hasLimitHint
-        // name="abc"
-        // state="error"
-        label='username'
-         
-    /><br /><br />
+        <Input size="medium" placeholder="Large"   
+            aria-label="Large" /><br /><br />
+        <Form style={{width: '60%'}} {...formItemLayout}   
+        size="medium" labelAlign="top">
+            {/* <Item label="password:">
+                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+            </Item>
+            <Item label="password:">
+                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+            </Item>
+            <Item label="password:">
+                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+            </Item> */}
+             <Item label="username:"  >
+                <Input htmlType="username" id="username" name="uname" placeholder="Please Enter Username"/>
+            </Item>
+             <Item label="password:"  >
+                <Input htmlType="password" id="password" name="upass" placeholder="Please Enter Password"/>
+            </Item>
+        </Form>
 
+        { null } {/* no display */}
     </div>,
-    // <Button type="primary"  >123</Button>, 
-    document.getElementById('root'));
- 
+// <Button type="primary"  >123</Button>, 
+document.getElementById('root'));
+
  

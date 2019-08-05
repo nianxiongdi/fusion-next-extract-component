@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@alifd/next": "^1.16.5",
     "classnames": "^2.2.6",
     "hoist-non-react-statics": "^3.3.0",
     "moment": "^2.24.0",

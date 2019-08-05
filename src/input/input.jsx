@@ -6,7 +6,6 @@ import {obj, func} from '../util';
 import Base from './base';
 import Group from './group';
 
-
 import './style'
 import { typeOf } from '../util/object';
  
@@ -138,9 +137,9 @@ export default class Input extends Base {
     }
 
  
-    componentWillReceiveProps(nextProps) {
-        console.log(123);
-    }
+    // componentWillReceiveProps(nextProps) {
+    //     console.log(nextProps.value);
+    // }
 
     //onKeyDown事件的调用函数
     handleKeyDown = e => {
@@ -240,7 +239,7 @@ export default class Input extends Base {
             
 
         } = this.props;
-         // console.log(size)
+        // console.log(size)
         // console.log(value)
         // console.log(this.props)
         // console.log(disabled)

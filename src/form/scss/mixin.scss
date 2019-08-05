@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+// form mixins
+// --------------------------------------------------
+
+@mixin form-enhance($line-height) {
+    .#{$css-prefix}checkbox-wrapper, .#{$css-prefix}checkbox-group, .#{$css-prefix}radio-wrapper, .#{$css-prefix}radio-group {
+        line-height: $line-height;
+    }
+}
+
+// 存在在 src/core/util下面
+@mixin box-sizing {
+    box-sizing: border-box;
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
+}
