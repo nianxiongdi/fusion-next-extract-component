@@ -225,7 +225,10 @@ export default class Item extends React.Component {
         const {
             id,
             label,
-            prefix
+            prefix,
+            labelAlign,
+            wrapperCol,
+            labelCol
         } = this.props;
 
         // 若不存在label， 直接的返回
@@ -243,10 +246,19 @@ export default class Item extends React.Component {
             { label }
         </label>);
 
+        
         const cls = classNames({
-            [`${prefix}form-item-label`]: true
+            [`${prefix}form-item-label`]: true,
         })
 
+        // labelAlign为inset和left的包裹
+        if((wrapperCol || labelCol)&& labelAlign !== 'top') {
+            return (<Col {...labelCol} className={cls}>
+                {ele}
+            </Col>);
+        }
+
+        // labelAlign为top的包裹
         return <div className={cls}> {ele} </div>
     }
 
@@ -263,15 +275,38 @@ export default class Item extends React.Component {
     getItemWrapper() {
         const {
             prefix,
-            children
+            children,
+            labelAlign,
+            labelCol,
+            wrapperCol,
         } = this.props;
 
         const childrenProps = {size: this.getSize() };
         let childrenNode = children;
+       
+
+        if( labelAlign === 'inset' ) {
+            childrenProps.label = this.getItemLabel();
+        }
+
         const ele = React.Children.map(childrenNode, child=> {
             return React.cloneElement(child, {...childrenProps});
         })
 
+        //当labelAlign为inset和left的样式
+        if((wrapperCol || labelCol) && labelCol !== 'top') {
+            return (
+                <Col 
+                    {...wrapperCol}
+                    className={`${prefix}form-item-control`}
+                    key="item"
+                >
+                    {ele}
+                </Col>
+            );
+        }
+
+        // 当labelAlign为top的样式
         return (
             <div className={`${prefix}form-item-control`}>
                 { ele }
@@ -286,7 +321,8 @@ export default class Item extends React.Component {
             labelAlign,
             style,
             prefix,
- 
+            wrapperCol,
+            labelCol,
         } = this.props;
         // console.log( this.props );
         // const state = this.getState();
@@ -294,15 +330,20 @@ export default class Item extends React.Component {
        
         const itemClassName = classNames({
             [`${prefix}form-item`]: true,
-            [`${prefix}${labelAlign}`]: labelAlign,
+            [`${prefix}${size}`]: !!size,
+            // [`${prefix}${labelAlign}`]: labelAlign,
         });
 
         // console.log( `${prefix}${labelAlign}` );
       
 
         // 垂直模式并且左对齐才用到
-        const Tag = 'div';
-        const label = this.getItemLabel();
+        // const Tag = 'div';
+        const Tag = (wrapperCol || labelCol) && labelAlign !== 'top' ? Row : 'div'
+
+        // 当为inset的时候，需要显示在组件内
+        const label = labelAlign === 'inset'? null: this.getItemLabel();
+
         return (
             <Tag
                 {...obj.pickOthers(Item.propTypes, this.props)}

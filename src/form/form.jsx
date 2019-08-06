@@ -150,6 +150,8 @@ export default class Form extends React.Component {
             labelCol,
             wrapperCol,
             labelAlign, // 位置
+            labelTextAlign, //标签的对齐方式
+
         } = this.props;
         
     
@@ -179,7 +181,10 @@ export default class Form extends React.Component {
                                         : wrapperCol,
                                     labelAlign: child.props.labelAlign // 标签的位置
                                         ? child.props.labelAlign
-                                        : labelAlign
+                                        : labelAlign,
+                                    labelTextAlign: child.props.labelTextAlign
+                                        ? child.props.labelTextAlign
+                                        : labelTextAlign
                                 }
                                 return React.cloneElement(
                                     child,

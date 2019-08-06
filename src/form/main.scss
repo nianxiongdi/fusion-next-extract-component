@@ -13,10 +13,36 @@
         margin-bottom: $form-item-m-margin-b; // 16px;
 
         // 这是是设置labelAlign为top的css样式
-        &.#{$css-prefix}top > #{$form-prefix}-item-label {
-            margin-bottom: $form-top-label-margin-b; // 2px
+        // &.#{$css-prefix}top > #{$form-prefix}-item-label {
+        //     margin-bottom: $form-top-label-margin-b; // 2px
+        // }
+
+
+        // 对于size="large"的字体的设置
+        &.#{$css-prefix}large {
+            margin-bottom: $form-item-l-margin-b; //20px; 
+            #{$form-prefix}-item-label { //设置行高
+                line-height:$form-element-large-height; //$s-10
+            }
+
+            #{$form-prefix}-item-label { // 设置字体的大小
+                font-size: $form-element-large-font-size;
+            }
+        }
+
+        // 对于size="small"的字体的设置
+        &.#{$css-prefix}small {
+            margin-bottom: $form-item-s-margin-b; // 
+            #{$form-prefix}-item-label { //设置行高
+                line-height:$form-element-small-height; // 
+            }
+
+            #{$form-prefix}-item-label { // 设置字体的大小
+                font-size: $form-element-small-font-size;
+            }
         }
     }
+    
     
     // 包裹label的css样式的设置
     &-item-label {
