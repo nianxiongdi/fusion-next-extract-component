@@ -1,0 +1,65 @@
+@charset "UTF-8";
+/**
+ * 尺寸 基础尺寸
+ * 命名能在语义的前提下简单就尽量简单, 这里可以是 size-2x, space-2x, size-base ...
+ * 不过可以在语义的前提下做的更精简一些, 于是用了s2, s1等
+ * 可用变量: `$s1 - $s8`
+ * @example scss - 使用
+ *   .element {
+ *     padding: $s1 !default;
+ *   }
+ *
+ * @example css - CSS 输出
+ *   .element {
+ *     padding: 4px !default;
+ *   }
+ */
+.next-form {
+  box-sizing: border-box;
+}
+
+.next-form *,
+.next-form *:before,
+.next-form *:after {
+  box-sizing: border-box;
+}
+
+.next-form-item {
+  margin-bottom: 16px;
+}
+
+.next-form-item.next-large {
+  margin-bottom: 20px;
+}
+
+.next-form-item.next-large .next-form-item-label {
+  line-height: 40px;
+}
+
+.next-form-item.next-large .next-form-item-label {
+  font-size: 16px;
+}
+
+.next-form-item.next-small {
+  margin-bottom: 12px;
+}
+
+.next-form-item.next-small .next-form-item-label {
+  line-height: 20px;
+}
+
+.next-form-item.next-small .next-form-item-label {
+  font-size: 12px;
+}
+
+.next-form-item-label {
+  display: inline-block;
+  vertical-align: top;
+  color: #666666;
+  text-align: right;
+  padding-right: 12px;
+}
+
+.next-form-item-label.next-left {
+  text-align: left;
+}

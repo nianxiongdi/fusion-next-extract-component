@@ -22,32 +22,49 @@ const formItemLayout = {
         span: 14
     }
 };
+
+
+
+function onchangeHandle(item1, item2) {
+    console.log('123');
+}
+
+
+
+class Demo extends React.Component {
+    render(){
+        return (<div>
+            <Input size="medium" placeholder="Large"   
+                aria-label="Large" /><br /><br />
+            <Form style={{width: '60%'}} {...formItemLayout}   
+            size="medium" labelAlign="left" labelTextAlign="right"
+            onChange={item=>console.log(item)}>
+                {/* <Item label="password:">
+                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+                </Item>
+                <Item label="password:">
+                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+                </Item>
+                <Item label="password:">
+                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
+                </Item> */}
+                 <Item label="username:"  >
+                    <Input htmlType="username" id="username" name="uname" placeholder="Please Enter Username"/>
+                </Item>
+                 <Item label="password:"  >
+                    <Input htmlType="password" id="password" name="upass" placeholder="Please Enter Password"/>
+                </Item>
+            </Form>
+    
+            { null } {/* no display */}
+        </div>);
+    }
+}
+
+
   
 ReactDOM.render(
-    <div>
-        <Input size="medium" placeholder="Large"   
-            aria-label="Large" /><br /><br />
-        <Form style={{width: '60%'}} {...formItemLayout}   
-        size="medium" labelAlign="top">
-            {/* <Item label="password:">
-                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-            </Item>
-            <Item label="password:">
-                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-            </Item>
-            <Item label="password:">
-                <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-            </Item> */}
-             <Item label="username:"  >
-                <Input htmlType="username" id="username" name="uname" placeholder="Please Enter Username"/>
-            </Item>
-             <Item label="password:"  >
-                <Input htmlType="password" id="password" name="upass" placeholder="Please Enter Password"/>
-            </Item>
-        </Form>
-
-        { null } {/* no display */}
-    </div>,
+    <Demo />,
 // <Button type="primary"  >123</Button>, 
 document.getElementById('root'));
 

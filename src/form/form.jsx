@@ -19,7 +19,7 @@ function pickerDefined(obj) {
     return newObj;
 }
 
-//阻止冒泡
+//阻止默认事件
 function preventDefault(e) {
     e.preventDefault();
 }
@@ -107,7 +107,10 @@ export default class Form extends React.Component {
 
     static defaultProps = {
         prefix: 'next-',
-        component: 'form'
+        component: 'form',
+        onSubmit: preventDefault,
+        saveField: func.noop,// 默认方法为 ()=>{}
+        onChange: func.noop,
     };
 
     static childContextTypes = {
@@ -119,13 +122,35 @@ export default class Form extends React.Component {
         super(props);
         
         const options = {
+            ...props.fieldOptions,
             // 通过onchange去管理数据
             onChange: this.onChange,
         };
         
-        this._formField = new Field(this, options);
+        // 当用户传递props属性时
+        if(props.field) {
+            this._formField = props.field;
+            const onChange = this._formField.onChange;
+            //Field内部的onchange方法 和 onChange 进行绑定在一起
+            options.onChange = func.makeChain(onChange, this.onChange);
+            //设置参数
+            this._formField.setOptions && this._formField.setOptions(options);
+        } else {
+      
+            if('value' in props) {
+                // 传递表单的数值
+                options.values = props.value;
+            }
+ 
+            this._formField = new Field(this, options);
+        }
+
+        // saveField	保存 Form 自动生成的 field 对象
+        props.saveField(this._formField);
+
     }
     onChange = (name, value) => {
+        // console.log(123);
         this.props.onChange(this._formField.getValues(), {
             name,
             value,
@@ -135,6 +160,7 @@ export default class Form extends React.Component {
 
     //传递给Item参数
     getChildContext() {
+        
         return {
             _formField: this.props.field ? this.props.field : this._formField,
             _formSize: this.props.size,
@@ -151,7 +177,7 @@ export default class Form extends React.Component {
             wrapperCol,
             labelAlign, // 位置
             labelTextAlign, //标签的对齐方式
-
+            onSubmit,
         } = this.props;
         
     
@@ -164,6 +190,7 @@ export default class Form extends React.Component {
         return (
             <Tag
                 className={formClassName}
+                onSubmit={onSubmit}
                 >
                 {
                     React.Children.map(children, child=>{
@@ -182,7 +209,7 @@ export default class Form extends React.Component {
                                     labelAlign: child.props.labelAlign // 标签的位置
                                         ? child.props.labelAlign
                                         : labelAlign,
-                                    labelTextAlign: child.props.labelTextAlign
+                                    labelTextAlign: child.props.labelTextAlign // 标签相当于组件的左右位置
                                         ? child.props.labelTextAlign
                                         : labelTextAlign
                                 }

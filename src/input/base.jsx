@@ -160,6 +160,8 @@ class Base extends React.Component {
             });
         }
         
+        console.log(this.props);
+        console.log('+++++')
         // 回调用户自定义的方法
         this.props.onChange(value, event);        
     }

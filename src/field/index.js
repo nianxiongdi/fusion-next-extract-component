@@ -189,7 +189,7 @@ class Field {
     _callOnChange(name, rule, trigger, ...others) {
         const e = others[0];
         const field = this._get(name);
-
+    
         if (!field) {
             return;
         }

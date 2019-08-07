@@ -211,6 +211,7 @@ export default class Item extends React.Component {
         const children = React.Children.toArray(this.props.children)
         return children
             .filter(item => {
+                // console.log(item.props);
                 return item.props && ('name' in item.props)
             })
             .map(item => {
@@ -228,7 +229,8 @@ export default class Item extends React.Component {
             prefix,
             labelAlign,
             wrapperCol,
-            labelCol
+            labelCol,
+            labelTextAlign,
         } = this.props;
 
         // 若不存在label， 直接的返回
@@ -249,6 +251,7 @@ export default class Item extends React.Component {
         
         const cls = classNames({
             [`${prefix}form-item-label`]: true,
+            [`${prefix}left`]: labelTextAlign === 'left'
         })
 
         // labelAlign为inset和left的包裹
@@ -282,15 +285,50 @@ export default class Item extends React.Component {
         } = this.props;
 
         const childrenProps = {size: this.getSize() };
-        let childrenNode = children;
-       
 
+        
         if( labelAlign === 'inset' ) {
             childrenProps.label = this.getItemLabel();
         }
 
+        let childrenNode = children;
+        // console.log('---');
+        // console.log(typeof children);
+        // 获取变量的数据
+        if (typeof children === 'function' && this.context._formField) {
+            childrenNode = this.context._formField.getValues();
+        }
+
+
+
+       
         const ele = React.Children.map(childrenNode, child=> {
-            return React.cloneElement(child, {...childrenProps});
+
+            if(child && typeof child.type === 'function' &&
+             child.type._formField !== 'form_item') {
+                let extraProps = childrenProps;
+                if( this.context._formField && 'name' in child.props ) {
+                    // extraProps = this.context._formField.init(this.props.name, {
+
+                    // });
+                    console.log( child.props );
+                    extraProps = this.context._formField.init(child.props.name,{
+                        // ...getFieldInitCfg(this.props, 'child.type.displayName'),
+                        props: child.props //child.props 代表子组件对象
+                    }, childrenProps);// childrenProps 需要修饰的对象
+          
+ 
+                    
+                }else {
+                    extraProps = Object.assign({}, child.props, extraProps);
+                }
+
+                return React.cloneElement(child, extraProps); // 统一当做props传递给子组件
+
+            }
+            
+            // return React.cloneElement(child, {...childrenProps});
+            return child;
         })
 
         //当labelAlign为inset和left的样式

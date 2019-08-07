@@ -51,6 +51,12 @@
         color: $form-label-color; // #666666
         text-align: right;
         padding-right: $form-label-padding-r; // 12px;
+        
+        // 设置属性 labelTextAlign =="left"的样式
+        &.#{$css-prefix}left { 
+            text-align: left;
+        }
+    
     }
 
     // input包裹的css的样式设置
