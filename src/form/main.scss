@@ -41,6 +41,17 @@
                 font-size: $form-element-small-font-size;
             }
         }
+
+        //labelAlign为top时 设置label margin-botto为2px
+        &.#{$css-prefix}top > #{$form-prefix}-item-label {
+            margin-bottom: $form-top-label-margin-b; // 2px
+        }
+        //labelAlign为inset时 需要把padding的左右设置为0px;并继承父元素的行高
+        &.#{$css-prefix}inset #{$form-prefix}-item-label {
+            padding-right: 0;
+            padding-left: 0;
+            line-height: inherit;
+        }
     }
     
     

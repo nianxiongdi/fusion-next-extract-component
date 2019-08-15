@@ -132,7 +132,7 @@ class Base extends React.Component {
      *      当child代表为Input时，则componentWillReceiveProps接收改变后参数，就是props发生改变，就会调用componentWillReceiveProps
      */
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
+        // console.log(nextProps);
         if ('value' in nextProps) {
             this.setState({
                 value:
@@ -160,8 +160,8 @@ class Base extends React.Component {
             });
         }
         
-        console.log(this.props);
-        console.log('+++++')
+        // console.log(this.props);
+        // console.log('+++++')
         // 回调用户自定义的方法
         this.props.onChange(value, event);        
     }
@@ -172,7 +172,7 @@ class Base extends React.Component {
      **/
     onKeyDown(e) {
         // console.log(e)
-        console.log('-onKeyDown-')
+        // console.log('-onKeyDown-')
         const value = e.target.value;
         const { maxLength } = this.props;
         

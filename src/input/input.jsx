@@ -122,7 +122,7 @@ export default class Input extends Base {
      * 获取字符串的长度， 也可以自定义
      **/
     getValueLength(value) {
-        console.log('--getValueLength')
+        // console.log('--getValueLength')
         const nv = `${value}`;
         
         //这里判断是否是用户 自定义的方法获取长度，若没有定义  返回的是undefined
@@ -226,7 +226,7 @@ export default class Input extends Base {
     }
 
     render() {
-        // console.log(this.props)
+        console.log(this.props)
         
         this.renderLength();
 
