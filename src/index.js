@@ -49,7 +49,7 @@ class Demo extends React.Component {
                     <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
                 </Item> */}
                  <Item label="username:"  >
-                    <Input htmlType="username" id="username" name="uname" placeholder="Please Enter Username"/>
+                    <Input htmlType="username" id="username" name="uname" defaultValue="123" placeholder="Please Enter Username"/>
                 </Item>
                  <Item label="password:"  >
                     <Input htmlType="password" id="password" name="upass" placeholder="Please Enter Password"/>

@@ -18,49 +18,40 @@ const initMeta = {
 };
 
 class Field {
+     
     constructor(com, options = {}) {
         if (!com) {
-            log.warning(
-                '`this` is missing in `Field`, you should use like `new Field(this)`'
-            );
+            log.warning('`this` is missing in `Field`, you should use like `new Field(this)`');
         }
 
-        this.com = com;
+        this.com = com; // 代表组件对象,必须传 .例如:     field = new Field(this);    // 实例创建
         this.fieldsMeta = {};
-        this.cachedBind = {};
-        this.instance = {};
-        this.initValues = options.values || {};
+        this.cachedBind = {};　 //　缓存
+        this.instance = {};　// 实例
 
-        this.options = Object.assign(
-            {
-                parseName: false,
-                forceUpdate: false,
-                scrollToFirstError: true,
-                first: false,
-                onChange: func.noop,
-                autoUnmount: true,
-                autoValidate: true,
-            },
-            options
-        );
+        this.options = Object.assign({
+            parseName: false,
+            forceUpdate: false, //仅建议PureComponent的组件打开此强制刷新功 https://juejin.im/post/5b614d9bf265da0fa759e84b
+            scrollToFirstError: true,// ? field.validate的时候滚动到第一个出错的组件, 如果是整数会进行偏移
+            first: false,//
+            onChange: func.noop, // 所有组件的change都会到达这里[setValue不会触发该函数]
+            autoUnmount: true,// 是否修改数据的时候就自动触发校验, 设为 false 后只能通过 validate() 来触发校验
+        }, options);
 
-        [
-            'init',
-            'getValue',
-            'getValues',
-            'setValue',
-            'setValues',
-            'getError',
-            'getErrors',
-            'setError',
-            'setErrors',
-            'validate',
-            'getState',
-            'reset',
-            'resetToDefault',
-            'remove',
-            'spliceArray',
-        ].forEach(m => {
+        ['init',
+        'getValue', //获取单个控件的值
+        'getValues',// 获取控件的值, 不传的话获取所以控件的值
+        'setValue', // 设置单个控件的值
+        'setValues',// 设置一组输入控件的值
+        'getError',//  获取单个输入控件的 Error
+        'setError',// 设置单个输入控件的 Error
+        'setErrors',// 设置一组输入控件的 Error
+        'validate',// 校验并获取一组输入域的值与 Error
+        'getState', // 判断校验状态
+        'reset', //重置一组输入控件的值、清空校验
+        'resetToDefault', // 重置一组输入控件的值为默认值
+        'remove' // 删除某一个或者一组控件的数据，删除后与之相关的validate/value都会被清空
+        ].forEach((m) => {//进行绑定
             this[m] = this[m].bind(this);
         });
 
@@ -81,54 +72,63 @@ class Field {
      */
     init(name, fieldOption = {}, rprops) {
         const {
-            initValue,
-            valueName = 'value',
-            trigger = 'onChange',
-            rules = [],
-            props = {},
-            getValueFromEvent = null,
-            autoValidate = true,
+            initValue, // 初始值
+            valueName = 'value',// 组件值的属性名称，如 Checkbox 的是 checked，Input是 value	
+            trigger = 'onChange',// // 触发数据变化的事件名称
+            rules = [], // 校验规则
+            props = {},//  // 组件自定义的事件可以写在这里
+            getValueFromEvent = null, //自定义从onChange事件中获取value的方式，一般不需要设置. 详细用法查看demo 自定义数据获取
+            autoValidate = true, // 是否修改数据的时候自动触发校验单个组件的校验, 设为 false 后只能通过 validate() 来触发校验	
         } = fieldOption;
+
+        // 把自定义event和组件props放在一起
         const originalProps = Object.assign({}, props, rprops);
+        
+        // 设置默认值
         const defaultValueName = `default${valueName[0].toUpperCase()}${valueName.slice(
             1
         )}`;
-
+        
+        // field初始化
         const field = this._getInitMeta(name);
+
+        // 默认值初始值的设置
         let defaultValue;
-        if (typeof initValue !== 'undefined') {
+        if (typeof initValue !== 'undefined') { // 初始值不是undefined时,进行初始化
             defaultValue = initValue;
-        } else if (originalProps[defaultValueName]) {
+        } else if (originalProps[defaultValueName]) { //当用户传递defaultValue属性时 defaultValue  <Input defaultValue="this is default value" />
             defaultValue = originalProps[defaultValueName];
         } else {
             defaultValue = getIn(this.initValues, name);
         }
-
+        
         Object.assign(field, {
-            valueName,
-            initValue: defaultValue,
-            disabled:
+            valueName, // 组件值的属性名称，如 Checkbox 的是 checked，Input是 value	
+            initValue: defaultValue, // 每一个控件的初始化值
+            disabled: // 是否被禁用
                 'disabled' in originalProps ? originalProps.disabled : false,
-            getValueFromEvent,
-            rules: Array.isArray(rules) ? rules : [rules],
-            ref: originalProps.ref,
+            getValueFromEvent, // 是否有自定义event
+            rules: Array.isArray(rules) ? rules : [rules], // 规则的定义 , 转换为数组
+            ref: originalProps.ref, // 保存ref
         });
 
         // Controlled Component
         if (valueName in originalProps) {
-            field.value = originalProps[valueName];
+            field.value = originalProps[valueName]; // 把当前组件的属性名,复制给value Input是value, checkbox为checked ,把当前组件的值,复制给value
+            // value 就可以保存 当前组件的值了. Input保存originalProps['value'], checkbox保存值为Input保存originalProps['checked']
         }
-
+        
+        // 若用户没有传参数, 设置默认值
         if (!('value' in field)) {
             field.value = defaultValue;
         }
-
+        console.log(this);
         // Component props
         const inputProps = {
-            'data-meta': 'Field',
-            id: name,
-            ref: this._getCacheBind(name, `${name}__ref`, this._saveRef),
-            [valueName]: field.value,
+            'data-meta': 'Field', // 标识
+            id: name, // name
+            ref: this._getCacheBind(name, `${name}__ref`, this._saveRef), // 绑定控件,存在到cache
+            [valueName]: field.value, // 存在对应组件的值
         };
 
         let rulesMap = {};
@@ -175,6 +175,7 @@ class Field {
             props[action](...args);
     }
 
+    // 初始化 每一个控件
     _getInitMeta(name) {
         if (!(name in this.fieldsMeta)) {
             this.fieldsMeta[name] = Object.assign({}, initMeta);
@@ -234,6 +235,7 @@ class Field {
      * @param {Function} component ref
      */
     _saveRef(name, component) {
+        // console.log(name, component);
         const key = `${name}_field`;
         const autoUnmount = this.options.autoUnmount;
 
