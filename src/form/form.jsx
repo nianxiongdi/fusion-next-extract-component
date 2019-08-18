@@ -179,9 +179,7 @@ export default class Form extends React.Component {
             labelTextAlign, //标签的对齐方式
             onSubmit,
         } = this.props;
-        
-        
-        
+  
         const formClassName = classNames({
             [`${prefix}form`]: true,
             [`${prefix}${size}`]: size,
@@ -195,6 +193,7 @@ export default class Form extends React.Component {
                 {
                     React.Children.map(children, child=>{
                         // console.log( child );
+                        // console.log('1221321321');
                         // console.log( child );
                         if(child &&
                             typeof child.type === 'function' &&

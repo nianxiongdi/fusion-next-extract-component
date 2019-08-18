@@ -311,7 +311,7 @@ export default class Item extends React.Component {
                     // extraProps = this.context._formField.init(this.props.name, {
 
                     // });
-                    console.log( child.props );
+                    // console.log( child.props );
                     extraProps = this.context._formField.init(child.props.name,{
                         // ...getFieldInitCfg(this.props, 'child.type.displayName'),
                         props: child.props //child.props 代表子组件对象
@@ -369,7 +369,7 @@ export default class Item extends React.Component {
         const itemClassName = classNames({
             [`${prefix}form-item`]: true,
             [`${prefix}${size}`]: !!size,
-            // [`${prefix}${labelAlign}`]: labelAlign,
+            [`${prefix}${labelAlign}`]: labelAlign,
         });
 
         // console.log( `${prefix}${labelAlign}` );

@@ -7,11 +7,13 @@ import * as serviceWorker from './serviceWorker';
 
 import Form from './form/form'
 import Item from './form/item'
+import Button from './button/'
+import Field from './field/'
 
-import Input from './input/input'
+// import Input from './input/input'
  
-// import { Input } from '@alifd/next';
-// import '@alifd/next/dist/next.css';
+import { Input } from '@alifd/next';
+import '@alifd/next/dist/next.css';
 
 import { func } from './util';
 const formItemLayout = {
@@ -25,46 +27,82 @@ const formItemLayout = {
 
 
 
-function onchangeHandle(item1, item2) {
-    console.log('123');
-}
+// class App extends React.Component {
 
+//     field = new Field(this, {
+//         autoValidate: true
+//     });
 
+//     normFile(list) {
+//         if (Array.isArray(list)) {
+//             return list;
+//         }
+//         return list && list.fileList;
+//     }
 
-class Demo extends React.Component {
-    render(){
-        return (<div>
-            <Input size="medium" placeholder="Large"   
-                aria-label="Large" /><br /><br />
-            <Form style={{width: '60%'}} {...formItemLayout}   
-            size="medium" labelAlign="left" labelTextAlign="right"
-            onChange={item=>console.log(item)}>
-                {/* <Item label="password:">
-                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-                </Item>
-                <Item label="password:">
-                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-                </Item>
-                <Item label="password:">
-                    <Input htmlType="password" name="basePass" placeholder="Please Enter Password"/>
-                </Item> */}
-                 <Item label="username:"  >
-                    <Input htmlType="username" id="username" name="uname" defaultValue="123" placeholder="Please Enter Username"/>
-                </Item>
-                 <Item label="password:"  >
-                    <Input htmlType="password" id="password" name="upass" placeholder="Please Enter Password"/>
-                </Item>
-            </Form>
-    
-            { null } {/* no display */}
+//     normDate(date, strdate) {
+//         console.log('normDate:', date, strdate);
+//         return strdate;
+//     }
+
+//     render() {
+//         const init = this.field.init;
+
+//         return (<div>
+//             <Input {...init('name', { getValueFromEvent: (value) => {
+//                 if (value.match(/##/)) {
+//                     return value;
+//                 } else {
+//                     return `## title-${value}`;
+//                 }
+//             }})} />
+//             <Button type="primary" onClick={() => {
+//                 consolees</Button>
+//         </div>);.log(this.field.getValues());
+//             }}>getValu
+//     }
+// }
+
+class App extends React.Component {
+    state = {
+        checkboxStatus: true
+    }
+    field = new Field(this, {
+        scrollToFirstError: -10,
+        valueName: 'value',
+        // parseName: true,
+        values: {
+            objWithDefaults: {
+                a: 1,
+                b: 2
+            }
+        },
+        autoValidate: true,     
+    });
+ 
+    render() {
+        console.log('~render~');
+        console.log(this.field.getValues(['obj']));
+        console.log('~render~');
+        const init = this.field.init;
+        // console.log(this.field.getError('input'));
+        return (<div className="demo">
+            <Input value="123" {...init('obj', {initValue: 'delete all',
+            props: {
+                // value:'abc1'
+            },  
+            rules: {required: true},
+            trigger: [ 'onChange']})} />
+            {this.field.getError('obj.b') ?
+                <span style={{color: 'red'}}>{this.field.getError('input').join(',')}</span> : ''}
+           
         </div>);
     }
 }
 
-
   
 ReactDOM.render(
-    <Demo />,
+    <App />,
 // <Button type="primary"  >123</Button>, 
 document.getElementById('root'));
 

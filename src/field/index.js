@@ -26,18 +26,20 @@ class Field {
 
         this.com = com; // 代表组件对象,必须传 .例如:     field = new Field(this);    // 实例创建
         this.fieldsMeta = {};
-        this.cachedBind = {};　 //　缓存
+        this.cachedBind = {};　 //　缓存变量的
         this.instance = {};　// 实例
 
+        this.values = options.values || {};
+
         this.options = Object.assign({
-            parseName: false,
+            parseName: false, //  当为true时,把 init('obj.b') 的数据转换成 obj={obj:{b:'value'}}；,当为false时,  obj={"obj.b": "value"},
             forceUpdate: false, //仅建议PureComponent的组件打开此强制刷新功 https://juejin.im/post/5b614d9bf265da0fa759e84b
             scrollToFirstError: true,// ? field.validate的时候滚动到第一个出错的组件, 如果是整数会进行偏移
             first: false,//
             onChange: func.noop, // 所有组件的change都会到达这里[setValue不会触发该函数]
             autoUnmount: true,// 是否修改数据的时候就自动触发校验, 设为 false 后只能通过 validate() 来触发校验
         }, options);
-
+        console.log(this);
         ['init',
         'getValue', //获取单个控件的值
         'getValues',// 获取控件的值, 不传的话获取所以控件的值
@@ -55,6 +57,7 @@ class Field {
             this[m] = this[m].bind(this);
         });
 
+        // 若用户设置values初始化,对变量进行初始化
         if (options.values) {
             this.setValues(options.values, false);
         }
@@ -81,27 +84,42 @@ class Field {
             autoValidate = true, // 是否修改数据的时候自动触发校验单个组件的校验, 设为 false 后只能通过 validate() 来触发校验	
         } = fieldOption;
 
+        // add code 
+        // parseName为true时,把 init('obj.b') 的数据转换成 obj={obj:{b:'value'}}；
+        const { parseName } = this.options;
+
+
         // 把自定义event和组件props放在一起
         const originalProps = Object.assign({}, props, rprops);
-        
+
         // 设置默认值
         const defaultValueName = `default${valueName[0].toUpperCase()}${valueName.slice(
             1
-        )}`;
+        )}`;//defaultValueName = 'defaultValue';
         
         // field初始化
         const field = this._getInitMeta(name);
-
+        console.log(field);
         // 默认值初始值的设置
         let defaultValue;
-        if (typeof initValue !== 'undefined') { // 初始值不是undefined时,进行初始化
+
+        // 默认值判断的改变
+        // if (typeof initValue !== 'undefined') { // 初始值不是undefined时,进行初始化
+        //     defaultValue = initValue;
+        // } else if (originalProps[defaultValueName]) { //当用户传递defaultValue属性时 defaultValue  <Input defaultValue="this is default value" />
+        //     defaultValue = originalProps[defaultValueName];
+        // } else {
+        //     defaultValue = getIn(this.initValues, name);
+        // }
+        if(typeof initValue !== 'undefined') {// 若options传递initValue,则设置为默认值
             defaultValue = initValue;
-        } else if (originalProps[defaultValueName]) { //当用户传递defaultValue属性时 defaultValue  <Input defaultValue="this is default value" />
+        }else if(typeof originalProps[defaultValueName]) {
             defaultValue = originalProps[defaultValueName];
-        } else {
-            defaultValue = getIn(this.initValues, name);
         }
+
         
+
+        // file变量的定义
         Object.assign(field, {
             valueName, // 组件值的属性名称，如 Checkbox 的是 checked，Input是 value	
             initValue: defaultValue, // 每一个控件的初始化值
@@ -111,18 +129,49 @@ class Field {
             rules: Array.isArray(rules) ? rules : [rules], // 规则的定义 , 转换为数组
             ref: originalProps.ref, // 保存ref
         });
-
-        // Controlled Component
+ 
+        // Controlled Component, should alwasy equal props.value
         if (valueName in originalProps) {
             field.value = originalProps[valueName]; // 把当前组件的属性名,复制给value Input是value, checkbox为checked ,把当前组件的值,复制给value
             // value 就可以保存 当前组件的值了. Input保存originalProps['value'], checkbox保存值为Input保存originalProps['checked']
+             
+            if (parseName) {
+                // 把 init('obj.b') 的数据转换成 obj={obj:{b:'value'}}；
+                //  并把Field中options定义的values放在一起
+                this.values = setIn(this.values, name, field.value);
+            }else { // 若为false直接挂在到Field对象上的values上
+                this.values[name] = field.value;
+            }
+
         }
         
         // 若用户没有传参数, 设置默认值
         if (!('value' in field)) {
-            field.value = defaultValue;
+            if(parseName) {
+                // 查找this.values是否存在name属性
+                const cachedValue = getIn(this.values, name);
+                field.value = 
+                    typeof cachedValue !== 'undefined'
+                        ? cachedValue 
+                        : defaultValue;
+            } else {// 当传的值不是obj.c的形式时
+                const cachedValue = this.values[name];
+                field.value = typeof cachedValue !== 'undefined'
+                    ? cachedValue 
+                    : defaultValue;
+            }
+            // 之前的方式, 问题 会出现当obc.a形式的时候,会出现问题
+            // field.value = defaultValue;
         }
-        console.log(this);
+
+        // 当parse为true时, 初始值没有含有对应的值
+        if(parseName && !getIn(this.values, name)) {
+            this.values = setIn(this.values, name, field.value);
+        } else if(!parseName && !this.values[name]) {
+            this.values[name] = field.value;
+        }
+  
+        // console.log(this);
         // Component props
         const inputProps = {
             'data-meta': 'Field', // 标识
@@ -133,6 +182,7 @@ class Field {
 
         let rulesMap = {};
 
+        // 验证
         if (this.options.autoValidate && autoValidate !== false) {
             // trigger map
             rulesMap = mapValidateRules(field.rules, trigger);
@@ -165,7 +215,7 @@ class Field {
         return Object.assign({}, originalProps, inputProps);
     }
 
-    /**
+        /**
      * event on props
      * props.onChange props.onBlur
      */
@@ -175,7 +225,6 @@ class Field {
             props[action](...args);
     }
 
-    // 初始化 每一个控件
     _getInitMeta(name) {
         if (!(name in this.fieldsMeta)) {
             this.fieldsMeta[name] = Object.assign({}, initMeta);
@@ -190,7 +239,7 @@ class Field {
     _callOnChange(name, rule, trigger, ...others) {
         const e = others[0];
         const field = this._get(name);
-    
+
         if (!field) {
             return;
         }
@@ -198,6 +247,12 @@ class Field {
         field.value = field.getValueFromEvent
             ? field.getValueFromEvent.apply(this, others)
             : getValueFromEvent(e);
+
+        if (this.options.parseName) {
+            this.values = setIn(this.values, name, field.value);
+        } else {
+            this.values[name] = field.value;
+        }
 
         this._resetError(name);
 
@@ -235,7 +290,6 @@ class Field {
      * @param {Function} component ref
      */
     _saveRef(name, component) {
-        // console.log(name, component);
         const key = `${name}_field`;
         const autoUnmount = this.options.autoUnmount;
 
@@ -247,14 +301,19 @@ class Field {
             const cache = this.fieldsMeta[name];
             this._setCache(name, key, cache);
             // after destroy, delete data
-            delete this.fieldsMeta[name];
             delete this.instance[name];
+            this.remove(name);
             return;
         }
 
         // 2. _saveRef(B, ref) (eg: same name but different compoent may be here)
         if (autoUnmount && !this.fieldsMeta[name]) {
             this.fieldsMeta[name] = this._getCache(name, key);
+            this.setValue(
+                name,
+                this.fieldsMeta[name] && this.fieldsMeta[name].value,
+                false
+            );
         }
 
         // only one time here
@@ -311,60 +370,71 @@ class Field {
     }
 
     getValue(name) {
-        const field = this._get(name);
-
-        if (field && 'value' in field) {
-            return field.value;
+        
+        if (this.options.parseName) {
+            return getIn(this.values, name);
         }
-
-        return undefined;
+        
+        return this.values[name];
     }
 
     /**
      * 1. get values by names.
-     * 2. ignore disabled value.
+     * 2. If no names passed, return shallow copy of `field.values`
      * @param {Array} names
      */
     getValues(names) {
-        const fields = names || this.getNames();
-        let allValues = {};
+        const allValues = {};
 
-        fields.forEach(f => {
-            if (f.disabled) {
-                return;
-            }
-            if (!this.options.parseName) {
-                allValues[f] = this.getValue(f);
-            } else {
-                allValues = setIn(allValues, f, this.getValue(f));
-            }
-        });
+        if (names && names.length) {
+           
+            names.forEach(name => {
+                allValues[name] = this.getValue(name);
+            });     
+        } else {
+            Object.assign(allValues, this.values);
+        }
+
         return allValues;
     }
 
     setValue(name, value, reRender = true) {
+        // 对field变量初始化
         if (name in this.fieldsMeta) {
             this.fieldsMeta[name].value = value;
+        }
+        // 对this.values初始化
+        if (this.options.parseName) {
+            this.values = setIn(this.values, name, value);
         } else {
-            // if not exist, then new one
-            this.fieldsMeta[name] = {
-                value,
-            };
+            this.values[name] = value;
         }
         reRender && this._reRender();
-    }
+    } 
 
+    // 初始化代码
     setValues(fieldsValue = {}, reRender = true) {
-        if (!this.options.parseName) {
+        if (!this.options.parseName) { // 正常变量的表达式
             Object.keys(fieldsValue).forEach(name => {
                 this.setValue(name, fieldsValue[name], false);
             });
-        } else {
-            const fields = this.getNames();
-            fields.forEach(name => {
-                const value = getIn(fieldsValue, name);
+        } else { // 可能含有obj.a这样的变量
+            // NOTE: this is a shallow merge
+            // Ex. we have two values a.b.c=1 ; a.b.d=2, and use setValues({a:{b:{c:3}}}) , then because of shallow merge a.b.d will be lost, we will get only {a:{b:{c:3}}}
+            this.values = Object.assign({}, this.values, fieldsValue); 
+            const fields = this.getNames();// // 获取FileMeta的变量名
+            fields.forEach(name => { // 遍历所以的field的变量
+                const value = getIn(this.values, name);
                 if (value !== undefined) {
-                    this.setValue(name, value, false);
+                    // copy over values that are in this.values
+                    this.fieldsMeta[name].value = value;
+                } else {
+                    // if no value then copy values from fieldsMeta to keep initialized component data
+                    this.values = setIn(
+                        this.values,
+                        name,
+                        this.fieldsMeta[name].value
+                    );
                 }
             });
         }
@@ -428,6 +498,26 @@ class Field {
     }
 
     /**
+     * Get errors using `getErrors` and format to match the structure of errors returned in field.validate
+     * @param {Array} fieldNames
+     * @return {Object || null} map of inputs and their errors
+     */
+    formatGetErrors(fieldNames) {
+        const errors = this.getErrors(fieldNames);
+        let formattedErrors = null;
+        for (const field in errors) {
+            if (errors.hasOwnProperty(field) && errors[field]) {
+                const errorsObj = errors[field];
+                if (!formattedErrors) {
+                    formattedErrors = {};
+                }
+                formattedErrors[field] = { errors: errorsObj };
+            }
+        }
+        return formattedErrors;
+    }
+
+    /**
      * validate by trigger
      * @param {Array} ns names
      * @param {Function} cb callback after validate
@@ -460,7 +550,9 @@ class Field {
         }
 
         if (!hasRule) {
-            callback && callback(null, this.getValues(fieldNames));
+            const errors = this.formatGetErrors(fieldNames);
+            callback &&
+                callback(errors, this.getValues(names ? fieldNames : []));
             return;
         }
 
@@ -477,7 +569,7 @@ class Field {
                     if (!errorsGroup[fieldName]) {
                         errorsGroup[fieldName] = {
                             errors: [],
-                        }; 
+                        };
                     }
                     const fieldErrors = errorsGroup[fieldName].errors;
                     fieldErrors.push(e.message);
@@ -492,6 +584,16 @@ class Field {
                 });
             }
 
+            const formattedGetErrors = this.formatGetErrors(fieldNames);
+
+            if (formattedGetErrors) {
+                errorsGroup = Object.assign(
+                    {},
+                    formattedGetErrors,
+                    errorsGroup
+                );
+            }
+
             // update to success which has no error
             for (let i = 0; i < fieldNames.length; i++) {
                 const name = fieldNames[i];
@@ -502,7 +604,8 @@ class Field {
             }
 
             // eslint-disable-next-line callback-return
-            callback && callback(errorsGroup, this.getValues(fieldNames));
+            callback &&
+                callback(errorsGroup, this.getValues(names ? fieldNames : []));
             this._reRender();
 
             if (errorsGroup && this.options.scrollToFirstError) {
@@ -554,9 +657,12 @@ class Field {
         let changed = false;
 
         const names = ns || Object.keys(this.fieldsMeta);
+
+        if (!ns) {
+            this.values = {};
+        }
         names.forEach(name => {
             const field = this._get(name);
-            this.getValue(name);
             if (field) {
                 changed = true;
 
@@ -566,6 +672,12 @@ class Field {
                 delete field.errors;
                 delete field.rules;
                 delete field.rulesMap;
+
+                if (this.options.parseName) {
+                    this.values = setIn(this.values, name, field.value);
+                } else {
+                    this.values[name] = field.value;
+                }
             }
         });
 
@@ -609,10 +721,19 @@ class Field {
         if (typeof ns === 'string') {
             ns = [ns];
         }
+        if (!ns) {
+            this.values = {};
+        }
+
         const names = ns || Object.keys(this.fieldsMeta);
         names.forEach(name => {
             if (name in this.fieldsMeta) {
                 delete this.fieldsMeta[name];
+            }
+            if (this.options.parseName) {
+                // this.values = deleteIn(this.values, name);
+            } else {
+                delete this.values[name];
             }
         });
     }
@@ -628,12 +749,14 @@ class Field {
             return;
         }
 
+        // regex to match field names in the same target array
         const reg = keyMatch.replace('{index}', '(\\d+)');
         const keyReg = new RegExp(`^${reg}$`);
 
         let list = [];
         const names = this.getNames();
         names.forEach(n => {
+            // is name in the target array?
             const ret = keyReg.exec(n);
             if (ret) {
                 const index = parseInt(ret[1]);
@@ -652,12 +775,20 @@ class Field {
         if (list.length > 0 && list[0].index === startIndex + 1) {
             list.forEach(l => {
                 const n = keyMatch.replace('{index}', l.index - 1);
-                this.fieldsMeta[n] = this.fieldsMeta[l.name];
+                const v = this.getValue(l.name);
+                this.setValue(n, v, false);
             });
+            this.remove(list[list.length - 1].name);
 
-            delete this.fieldsMeta[list[list.length - 1].name];
+            let parentName = keyMatch.replace('.{index}', '');
+            parentName = parentName.replace('[{index}]', '');
+            const parent = this.getValue(parentName);
 
-            this._reRender();
+            if (parent) {
+                // if parseName=true then parent is an Array object but does not know an element was removed
+                // this manually decrements the array length
+                parent.length--;
+            }
         }
     }
 
